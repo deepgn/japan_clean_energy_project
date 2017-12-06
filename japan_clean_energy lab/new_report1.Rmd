@@ -1,0 +1,307 @@
+---
+title: 'Decarbonization Project Assignment, Part 1'
+author: "Gerald Nelson Jr."
+date: "Due Oct. 30, 2017"
+bibliography: "decarbonization.bib" # this line tells RMarkdown which file to use for the bibliography
+output: 
+  html_document: default
+  pdf_document:
+    include:
+      in_header: "ees3310.sty" # This line just tells RMarkdown to use a style file to format the PDF file with Times Roman font.
+---
+```{r setup, include=FALSE}
+knitr::knit_hooks$set(inline = function(x) { knitr:::format_sci(x, 'md')})
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+
+# This section loads necessary R libraries and sources scripts that define 
+# useful functions format_md.
+# 
+data_dir = "data"
+script_dir = "scripts"
+
+if (!dir.exists('data')) dir.create('data')
+
+library(pacman)
+
+# Some lab computers fail to load tidyverse
+# because bindr is not installed.
+# This will prevent such errors.
+if (!p_isinstalled(bindr)) p_install(bindr)
+
+
+# Load all of the following packages.
+# Install any missing packages.
+
+
+# This sets the default style for ggplot
+theme_set(theme_bw(base_size = 15))
+
+# Load basic utility scripts
+source('scripts/utils.R', chdir = T)
+
+```
+
+```{r launch_kaya_tool}
+library (pacman)
+p_load_gh ("gilligan-ees-3310/kayatool")
+
+
+```
+#Introduction
+
+In this paper, we will examine the Kaya variable trends over time for United States, japan and then the japan as a whole. Then, we will examine the decarbonization rates necessary to reach the emissions reduction target set for each country and the japan. This paper will conclude with a discussion of the implications drawn from the results of these models.
+
+
+#Data and Plots
+
+**First, Let's look at the kaya variable data tables and plot trends for the United States.**
+
+```{r japan_kaya_identity_values_constants}
+japan_P = 0.128
+japan_G =5.67
+japan_g = 44.3936627400988
+japan_E = 20.6879877237756
+japan_F = 1276.74156677859
+japan_e = 3.64954965475016
+japan_f = 61.7141494777328
+japan_ef = 225.083120645039
+
+
+
+japan_values = tibble(variable = c("P", "g", "e", "f"), 
+               japan_value = c(japan_P, japan_g, japan_e, japan_f))
+
+kable (japan_values)
+
+
+```
+
+
+```{r japan_kaya_rates_of_change}
+japan_rate_P = -0.0007
+japan_rate_g = 0.0056
+japan_rate_e = -0.0205
+japan_rate_f = -0.0132
+japan_rate_ef = -.0076
+japan_rate_G =.0049
+japan_rate_E = -.0160
+japan_rate_F = -.0027
+
+japan_rates = table(variable = c("P", "g", "e", "f"), 
+               japan_rate = c(japan_rate_P, japan_rate_g, japan_rate_e, japan_rate_f))
+
+kable (japan_rates)
+
+```
+
+```{r japan_kaya_rates_of_change}
+japan_rate_e_new = japan_rate_F -(japan_rate_P + japan_rate_g)
+
+```
+
+```{r japan_growth_rate}
+
+japan_P_2050 = (japan_P * exp(japan_rate_P*(2050-2005)))
+japan_g_2050 = (japan_g * exp (japan_rate_g*(2050-2016)))
+
+japan_f_2050 = (japan_f * exp (japan_rate_f * (2050-2005)))
+japan_ef_2050 = (japan_ef * exp (japan_rate_ef * (2050-2005)))
+japan_F_2050 = (japan_F * exp (japan_rate_F * (2050-2005)))
+japan_e_2050 = (japan_e*(exp (japan_rate_e * (2050-2005))))
+
+
+
+japan_e_2050
+japan_ef_2050
+japan_e_2050
+japan_f_2050
+japan_g_2050
+japan_P_2050
+
+japan_2050_values = tibble(variable = c("P", "g", "e", "f"), 
+               japan_2050_value = c(japan_P_2050, japan_g_2050, japan_e_2050, japan_f_2050))
+
+kable (japan_2050_values)
+
+```
+
+```{r japan_F_2005}
+
+japan_F_2005 = 1191
+
+```
+
+```{r japan_F_target}
+
+japan_F_target = japan_F *(1-.66)
+japan_F_target
+
+japan_implied_rate_F = log(japan_F_2050/ japan_F_2005) / (2050 - 2005)
+
+japan_implied_rate_F
+
+```
+
+
+
+```{r japan_implied_rate_F}
+
+japan_implied_rate_F = log(japan_F_2050/ japan_F_2005) / (2050 - 2005)
+
+japan_implied_rate_F
+```
+
+```{r japan_decarbonization_rate}
+japan_decarbonization_rate = japan_implied_rate_F -japan_rate_P - japan_rate_g
+
+japan_decarbonization_rate
+
+
+```
+
+
+```{r load_japan}
+japan_data = read_csv('japan.csv')
+```
+
+
+```{r plot_japan_g}
+ggplot(japan_data, aes(x = year, y= g)) +
+  geom_line() + geom_point()
+```
+
+```{r plot_japan_e}
+ggplot(japan_data, aes(x = year, y= e)) +
+  geom_line() + geom_point()
+```
+
+```{r plot_japan_f}
+ggplot(japan_data, aes(x = year, y= f)) +
+  geom_line() + geom_point()
+```
+
+```{r plot_japan_log_P}
+ggplot(japan_data, aes(x = year, y= P)) +
+  geom_line() + geom_point() +
+  scale_y_log10()
+```
+
+```{r plot_japan_log_g}
+ggplot(japan_data, aes(x = year, y= g)) +
+  geom_line() + geom_point() +
+  scale_y_log10()
+```
+
+```{r plot_japan_log_e}
+ggplot(japan_data, aes(x = year, y= e)) +
+  geom_line() + geom_point() +
+  scale_y_log10()
+```
+
+```{r plot_japan_log_f}
+ggplot(japan_data, aes(x = year, y= f)) +
+  geom_line() + geom_point() + 
+  scale_y_log10()
+```
+
+
+```{r japan_calculate_slopes}
+# average annual growth rate of per-capita GDP, in percent per year
+P_fit = lm(log(P)~ year, data = japan_data)
+rate_P = summary(P_fit)$coefficients['year', 'Estimate']
+
+g_fit = lm(log(g)~ year, data = japan_data)
+rate_g = summary(g_fit)$coefficients['year', 'Estimate']
+
+e_fit = lm(log(e)~ year, data = japan_data)
+rate_e = summary(e_fit)$coefficients['year', 'Estimate']
+
+
+
+
+```
+ 
+ 
+---decarbonization part 2 top down
+```{r load_japan_data}
+target_year = 2050
+reference_year = 2005
+start_year = 2016
+
+target_japan_reduction = 0.66
+
+japan_data = get_kaya_data("japan")
+japan_fuel_mix = get_fuel_mix("japan") %>% arrange(fuel)
+japan_projection = project_top_down("japan", target_year)
+
+target_japan_emissions = filter(japan_data, year == reference_year)$F * (1 - target_japan_reduction)
+projected_japan_E = japan_projection$E
+```
+
+
+```{r top_down}
+ target_japan_reduction = 0.78
+japan_data = get_kaya_data("japan")
+japan_fuel_mix = get_fuel_mix("japan") %>% arrange(fuel)
+japan_projection = project_top_down("japan", target_year)
+target_japan_emissions = filter(japan_data, year == reference_year)$F * (1 - target_japan_reduction)
+projected_japan_E = japan_projection$E
+```
+
+```{r emissions factors}
+e_factors = emissions_factors()
+plot_fuel_mix(japan_fuel_mix)
+```
+
+
+```{r fuel mix}
+
+kable(e_factors)
+
+```
+
+```{r next top down}
+
+japan_fuel_mix_2050 = japan_fuel_mix %>%
+select(fuel, pct) %>% # We only need to worry about the percentage of each fuel
+mutate(quads = projected_japan_E * pct / 100) # We multiply the total energy 
+# The percentage from each fuel to figure
+# the number of quads of each fuel that
+# the japan would consume if the fuel
+# mix stayed the same.
+kable(japan_fuel_mix_2050, digits = c(0,1,0))
+```
+
+```{r next 2 top down}
+japan_fuel_mix_2050 = japan_fuel_mix %>%
+select(fuel, pct) %>% # We only need to worry about the percentage of each fuel
+mutate(quads = projected_japan_E * pct / 100) # We multiply the total energy dema
+nd by
+# The percentage from each fuel to figure
+# the number of quads of each fuel that
+# the japan would consume if the fuel
+# mix stayed the same.
+kable(japan_fuel_mix_2050, digits = c(0,1,0)
+```
+
+```{r top down 3}
+total_japan_emissions_2050 = sum(japan_emissions_2050$emissions)
+# Emissions reduction necessary to meet target
+delta_japan_emissions = total_japan_emissions_2050 - target_japan_emissions
+# Separate each fossil fuel to make calculations easier
+japan_coal_2050 = filter(japan_emissions_2050, fuel == "Coal")
+japan_gas_2050 = filter(japan_emissions_2050, fuel == "Natural Gas")
+japan_oil_2050 = filter(japan_emissions_2050, fuel == "Oil")
+# Reduction from eliminating both coal and gas
+japan_coal_gas_reduction = japan_coal_2050$emissions + japan_gas_2050$emissions
+# What's left that we have to meet by reducing oil consumption
+japan_remainder = delta_japan_emissions - japan_coal_gas_reduction
+oil_factor = filter(e_factors, fuel == "Oil")$emission_factor
+# Quads of oil we have to replace with renewables.
+delta_japan_oil_quads = japan_remainder / oil_factor
+# Total clean energy needs
+japan_new_clean_energy = delta_japan_oil_quads + japan_coal_2050$quads +
+japan_gas_2050$quads
+```
+
+
