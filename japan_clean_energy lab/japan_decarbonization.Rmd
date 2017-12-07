@@ -1,7 +1,7 @@
 ---
-title: 'Decarbonization Project Assignment, Part 1'
+title: 'Japanese Clean Energy'
 author: "Gerald Nelson Jr."
-date: "Due Oct. 30, 2017"
+date: "Due Dec. 06, 2017"
 bibliography: "decarbonization.bib" # this line tells RMarkdown which file to use for the bibliography
 output: 
   html_document: default
@@ -34,7 +34,7 @@ if (!p_isinstalled(bindr)) p_install(bindr)
 
 
 # This sets the default style for ggplot
-theme_set(theme_bw(base_size = 15))
+#theme_set(theme_bw(base_size = 15))
 
 # Load basic utility scripts
 source('scripts/utils.R', chdir = T)
@@ -49,18 +49,40 @@ p_load_gh ("gilligan-ees-3310/kayatool")
 ```
 #Introduction
 
+Compared with the rest of the world, Japan is in a unique position. Japan has a declining population rate of -0.14 percent and energy efficiency of around twice that of either the U.S. or the E.U. (energy consumption per unit of GDP) (Nishiyama, 2013). Therein, Japan may see a much easier time reaching its emissions goals than other countries, especially considering that average world population growth as of 2010 was 1.19% per year.
+
+Japan is the third largest economy in the world by nominal GDP. Being among the wealthier countries in the world, I believe that Japan's responsibility to cut emissions is much higher than other countries that experience energy poverty and need allowances in order to develop their economies. Therein, Japan's responsibility to cut emissions will be well above the expected world average of emissions cuts.
+
+Based on the representative concentration pathways developed by the IPCC, with the focus on keeping warming below 2 C, Japan's necessary decarbonization would be a goal of emissions 66% below 2005 levels. I will use this as the target for my analysis because I think any weaker goal would be irresponsible considering that a rise in global average temperature of 2 C may be a global tipping point of unadabptable climate change.
+
+My path to reach on the goal will be through either policy or political campaigning to force a 20% increase in the  Japan's improved energy efficieny at the start date (2016), and then continue along a normal trend of improved energy efficiency in line with Japan's current trend of improved energy efficiency.
+
 In this paper, we will examine the Kaya variable trends over time for United States, japan and then the japan as a whole. Then, we will examine the decarbonization rates necessary to reach the emissions reduction target set for each country and the japan. This paper will conclude with a discussion of the implications drawn from the results of these models.
 
+First let's say a few words of about the context of Japan's energy consumption and supply.
+
+#Energy Conservation in Japan
+
+Japan has had a strong focus on energy conservation practices since the Post-War period. In 1978, Japan relied on oil for 73.5% of its primary energy usage (Shiel, Jeffers, Dyar, 2011). In 1973 and 1979 two major oil crises had a staggering effect on the Japanese economy. The only crisis was a major catalyst for Japan generally moving away from oil intensive industries and investing heavily in industries like electronics. Given that Japan has always valued energy conservation in respect to its heavy reliance foreign energy suppliers, the oil shocks of the 1970s actually allowed the Japanese automobile industry to soar ahead almost all of its competitors considering that Japanese vehicles had long placed a high value of energy efficiency.  A relationship of close cooperation between the Japanese government and businesses, along with the new standards required by the Energy Efficiency Act of 1979, allowed Japan to decrease its oil dependence from around 80% in 1973 to just 43% by 2007, during a period in which Japan's GDP had increased 2.3 times (Japan's Energy, 2016). Further, from 1979 to 2009, Japan's primary energy use fell 43%. Further Japan's energy consumption per unit of GDP was 80% and 110% percent lower than both U.S. and the E.U. respectively in 2009 (Nishiyama, 2013).
+
+#Japan and Nuclear
+Following the Fukushima Disaster in 2011, Japan began a process of phasing out of its reliance on nuclear power which culminated in a complete shutdown of all nuclear power plants in Japan by 2014. In 2011, nuclear accounted for nearly 30% of Japan's primary energy. However, after the complete phase out, Japan went from around a 62% reliance on foreign fossil fuels in 2010 to around 88% reliance in 2014 (Japan's Energy, 2016). Losing nuclear power as a resource resulted in Japan going from 19.9% energy self-sufficient (i.e. the percentage of its energy needs Japan can provide for itself without importing energy) to only 6% in 2014. Even more dramatic, the loss of nuclear energy strongly contributed to a dramatic rise in energy costs between 2010 and 2015, 25% and 39% respectively for homes and businesses. Further, following the elimination of nuclear power, Japan saw a staggering rise in the energy intensity of its economy from around 60 MMT in 2010 of CO~2~ to nearly 70 in 2014 (Japan's Energy, 2016).
+A dramatic rise in energy intensity coupled with fast declining energy self-sufficiency is absolutely untenable considering Japan's very aggressive emissions reduction and energy security plans for the next 40 and 60 years. This means that at some point in the future, Japan will with almost full certainty have to resume its nuclear power plant operations. The Japan Atomic Energy Agency (JAEA) has proposed a 54% reduction in CO~2~ emissions (from 200 0 levels) by 2050, followed by a 90% reduction by 2100. JAEA proposes that 60% of primary energy production come from nuclear by 2100, in order to simultaneously tackle emissions reduction and energy security (World Nuclear Association, 2017).
+
+#Bottom Up Analysis
+Let's look at some of the figures for the bottom analysis of Japan before look more specifically at the numbers for the top down analysis.
 
 #Data and Plots
 
-**First, Let's look at the kaya variable data tables and plot trends for the United States.**
+**First, Let's look at the kaya variable data tables and plot trends for Japan.**
 
-```{r load_japan}
+```{r load2_japan}
 japan_data = read_csv('japan.csv')
 ```
 
 ```{r japan_kaya_identity_values_constants}
+japan_rate_E = -.0166 #2010's numbers
+
 japan_P = filter(japan_data, year == 2016)$P
 japan_G =filter(japan_data, year == 2016)$G
 japan_g = filter(japan_data, year == 2016)$g
@@ -68,6 +90,9 @@ japan_E = filter(japan_data, year == 2016)$E
 japan_F = filter(japan_data, year == 2016)$F
 japan_e = filter(japan_data, year == 2016)$e
 japan_ef = filter(japan_data, year == 2016)$ef
+japan_f = filter (japan_data, year == 2016)$f
+
+japan_E_2050 = japan_E * exp (japan_rate_E *(2050-2010))
 
 
 
@@ -80,24 +105,29 @@ kable (japan_values)
 ```
 
 
-```{r japan_kaya_rates_of_change}
+```{r japan_kaya_v}
 japan_rate_P= -0.0014
 japan_rate_g = 0.0121
 japan_rate_e = -0.0273
 japan_rate_f = -0.0170
 japan_rate_ef = -.0103
 japan_rate_G =-.0103
-japan_rate_E = -.0166
+japan_rate_E = -.0166 #2010's numbers
 japan_rate_F = -.0004
+
 
 japan_rates = table(variable = c("P", "g", "e", "f"), 
                japan_rate = c(japan_rate_P, japan_rate_g, japan_rate_e, japan_rate_f))
 
 kable (japan_rates)
 
+japan_rate_E_corrected = 1.2*japan_rate_e - japan_rate_G
+japan_rate_E_corrected
+japan_E_corrected_2050 = japan_E*exp(japan_rate_E_corrected*(2050-2010))
+
 ```
 
-```{r japan_kaya_rates_of_change}
+```{r load_j}
 japan_rate_e_new = japan_rate_F -(japan_rate_P + japan_rate_g)
 
 ```
@@ -111,6 +141,10 @@ japan_f_2050 = (japan_f * exp (japan_rate_f * (2050-2010)))
 japan_ef_2050 = (japan_ef * exp (japan_rate_ef * (2050-2010)))
 japan_F_2050 = (japan_F * exp (japan_rate_F * (2050-2010)))
 japan_e_2050 = (japan_e*(exp (japan_rate_e * (2050-2010))))
+japan_E_2050 = japan_E * exp (japan_rate_E *(2050-2010))
+japan_E_corrected_2050 = japan_E*exp(japan_rate_E_corrected*(2050-2010))
+#setsudan ancedote
+
 
 
 
@@ -132,6 +166,7 @@ kable (japan_2050_values)
 
 japan_F_2010 = 1191
 japan_e_2010 = 3.45
+japan_E_2016
 
 
 ```
@@ -145,7 +180,7 @@ japan_implied_rate_F = log(japan_F_2050/ japan_F_2005) / (2050 - 2005)
 
 japan_implied_rate_F
 
-japan_implied_rate_ef = japan_rate_F _ (japan_rate_P + japan_rate_g)
+japan_implied_rate_ef = japan_rate_F - (japan_rate_P + japan_rate_g)
 
 japan_implied_rate_e = log(japan_e_2050/ japan_e_2010) / (2050 - 2010)
 
@@ -171,7 +206,7 @@ japan_decarbonization_rate
 ```
 
 
-```{r load_japan}
+```{r load1_japan}
 japan_data = read_csv('japan.csv')
 ```
 
@@ -233,21 +268,158 @@ rate_e = summary(e_fit)$coefficients['year', 'Estimate']
 ```
  
  
----decarbonization part 2 top down
-```{r load_japan_data}
+#Top-Down Analysis
+
+Now let's look at the top-down analysis.
+```{r load_japan3_data}
+
 target_year = 2050
 reference_year = 2010
 start_year = 2016
 
 target_japan_reduction = 0.66
 
-japan_data = get_kaya_data("japan")
-japan_fuel_mix = get_fuel_mix("japan") %>% arrange(fuel)
-japan_projection = project_top_down("japan", target_year)
+japan_data = get_kaya_data("Japan")
+japan_fuel_mix = get_fuel_mix("Japan") %>% arrange(fuel)
+japan_projection = project_top_down("Japan", target_year)
 
 target_japan_emissions = filter(japan_data, year == reference_year)$F * (1 - target_japan_reduction)
-projected_japan_E = japan_projection$E
+projected_japan_E = 10
+#japan_projection$E
+corrected_projected_japan_E = japan_E_corrected_2050
+#projected_japan_E = japan_projection$E
 ```
+
+Following the Fukushima Disaster, Japan phased out all of its nuclear power plant use. The result, as mentioned above was a significant increase in the energy intensity of the economy. The current energy mix of Japan as of 2016 is shown below:
+
+```{r emissions factors1}
+e_factors = emissions_factors()
+plot_fuel_mix(japan_fuel_mix)
+```
+
+However, as mentioned earlier, this energy mix, which excludes nuclear power, is untenable considering Japan's extremely aggressive emission goals. Considering these difficulties, In the December 2016 issue of Japan's Energy, the Ministry of Economy, Trade and Industry (METI) in collaboration with the Agency for Natural Resources and Energy (ANRE), recommended the following energy mix:
+
+
+```{r Japan no nuclear fuel mix}
+no_nuclear_fuel_mix = tibble("Coal" = 0, "Natural Gas" = 10, "Nuclear" = 0, "Renewables" = 90, "Oil" = 3) %>% gather(key = "fuel", value = "pct")
+
+japan_fuel_mix_2050_no_nuclear = no_nuclear_fuel_mix %>% select(-pct) %>% left_join(no_nuclear_fuel_mix, by = "fuel") %>% mutate(quads = japan_projection$E * pct / 100)
+
+ideal_fuel_mix = tibble("Coal" = 26, "Natural Gas" = 27, "Nuclear" = 20, "Renewables" = 24, "Oil" = 3) %>% gather(key = "fuel", value = "pct")
+
+japan_fuel_mix_2050_ideal = ideal_fuel_mix %>% select(-pct) %>% left_join(ideal_fuel_mix, by = "fuel") %>% mutate(quads = japan_projection$E * pct / 100)
+
+e_factors = emissions_factors()
+plot_fuel_mix(japan_fuel_mix_2050_ideal)
+
+#renewable 24%
+#nuclear 20%
+#natural gas 27
+#coal 26
+#oil 3
+
+```
+
+Considering the daunting task of acheiving Japan's emission goal of 66% reduction from 2005 levels sets by IPCC given the complete phase out nuclear, I think it would be helpful to compare Japan's no nuclear energy mix with that of the ideal mix recommended by METI and ANRE.
+
+To make our job easier we will apply a boost to Japan's energy efficiency. As mentioned earlier, Japan has been seriously engaged in developing energy conservation practices and technology since the late 1940s. Japan has demonstrated an incredible capacity to be energy efficient, being around twice as energy efficient as either the U.S. or the E.U comparatively. Even given the already high energy efficiency of Japan, following the Fukushima disaster, in order to prevent rolling blackouts in Eastern Japan, the Japanese government campaigned an energy conservation policy called "Setsuden". The public and business response was strong and the energy usage during peach hours was reduced 20% during 2011 (Oliver, 2012). The public response was so strong, in fact, that the Japanese government recalled its order and ended the campaign nearly a month.
+
+Given this strong inclination towards energy efficiency, I think it is reasonable to suggest that if Japan wishes to reach its emissions goals easier, then we can posit a 20% increase to Japan's energy efficiency in respect to its 2010 energy efficiency level.
+
+If we applied to a 20% to the 2010 energy efficiency, Japan's projected energy consumption in 2050 would decrease from 10 quads to 7.2. This is a 28% reduction in energy use just from energy conservation, and makes our job of reducing emissions much easier.
+
+So let's take a look at  what Japan's energy production levels would be for each portion of the energy mix. First lets look at the energy mix as of 2016 with no nuclear:
+
+```{r Japan 2016 energy mix outputs, no nuclear1}
+japan_fuel_mix_2050 = no_nuclear_fuel_mix %>%
+select(fuel, pct) %>% 
+mutate(quads = corrected_projected_japan_E * pct / 100) 
+kable(japan_fuel_mix_2050, digits = c(0,1,0))
+
+
+
+```
+
+If work with METI and ANRE's recommended energy mix is used then we get the following distribution of energy use.
+
+```{r Japan 2016 energy mix outputs, no nuclear}
+ideal_japan_fuel_mix_2050 = ideal_fuel_mix %>%
+select(fuel, pct) %>% 
+mutate(quads = corrected_projected_japan_E * pct / 100) 
+kable(ideal_japan_fuel_mix_2050, digits = c(0,1,0))
+
+
+
+```
+
+
+With an increase in nuclear and natural gas the energy output needed by nuclear is reduced to a third.
+
+To provide enough nuclear power plants to provide 1 quad of energy, Japan would have to build 15 new nuclear powerplants.
+
+```{r define capacity}
+capacity = generation_capacity()
+
+
+capacity = capacity %>%
+mutate(average_power = nameplate_capacity * capacity_factor)
+kable(capacity)
+
+```
+
+```{r convert capacity to quads}
+capacity = capacity %>% select(fuel, description, average_power) %>%
+mutate(quads = average_power / megawatts_per_quad(),
+plants_per_quad = 1 / quads)
+kable(capacity, digits = c(0,0,2,5,1))
+
+
+```
+
+```{r japan nuclear}
+nuclear_plants_per_quad = filter(capacity, fuel == "Nuclear")$plants_per_quad
+japan_new_nuclear_plants = 1 * nuclear_plants_per_quad
+japan_new_nuclear_plants
+
+```
+
+Further, Japan would have to build 29 new wind turbines to reach the goal of 2 quads of renewable power. However, Japan already produces around 7.84 quads of wind power at the present, so that goal would be easily reached (Wood, 2011). It is clear that Japan's declining population and fastly improving energy efficiency and conservation greatly helps the acheivement of its energy goals.
+
+```{r japan wind META}
+wind_plants_per_quad = filter(capacity, fuel == "Wind")$plants_per_quad
+japan_new_wind_plants = 2 * nuclear_plants_per_quad
+japan_new_wind_plants
+
+```
+
+```{r japan solar META}
+solar_plants_per_quad = filter(capacity, fuel == "Solar Thermal")$plants_per_quad
+japan_new_solar_plants = 2 * solar_plants_per_quad
+japan_new_solar_plants
+
+```
+
+If Japan were to pursue solar energy to provide for its renewable energy needs, it would need to build  366 new solar power plants. However, Japan has the capacity for 2.91 quads of solar power (9.7 quad nameplate capacity), the second largest capacity in (International Energy Agency, 2017). 
+ 
+#Conclusion
+
+In conclusion, Japan if it would accelerate its energy conservation strategies would have much easier time than most countries in reaching its emissions reduction goals considering its declining population and ingrained energy conservation practices. Further, Japan is one of the world leaders in renewable energy technology so it seems that it already has a head start in acheiving its emissions reduction goals.
+
+Considering all these things, its makes sense for Japan to contribute a greater share to reducing goal emissions.
+
+#Bibliography
+
+World Nuclear Association. (2017, October). Nuclear Power in Japan. Retrieved December 07, 2017, from http://www.world-nuclear.org/information-library/country-profiles/countries-g-n/japan-nuclear-power.aspx
+
+Shiel, P., Jeffers, N., & Dyar, M. (2011). Energy Conservation Measures in Japan. Trinity College Dublin.
+
+Japan's Energy Ministry of Economy, Trade and Industry Agency for Natural Resources and Energy. Japan's Energy. (December 2016).
+
+Nishiyama, Hidemasha. International Affairs Office, Energy Conservation and Renewable Energy Dept. Agency for Natural Resources and Energy Japan's Policy on Energy Conservation. Japan's Policy on Energy Conservation. EMAK 4 Work Shop January 2013
+
+Oliver, Chris. "Japan's power saving measures set to end early". Market Watch. Retrieved 6 February 2012.
+
+Wood, Elisa (2011-05-25). "The Dangers of Energy Generation". Renewable Energy World. Archived from the original on 2011-06-03. Retrieved 3 December 2017.
 
 
 ```{r top_down}
@@ -256,7 +428,9 @@ japan_data = get_kaya_data("japan")
 japan_fuel_mix = get_fuel_mix("japan") %>% arrange(fuel)
 japan_projection = project_top_down("japan", target_year) #What does this mean?
 target_japan_emissions = filter(japan_data, year == reference_year)$F * (1 - target_japan_reduction)
-projected_japan_E = japan_projection$E
+projected_japan_E = 10
+#japan_projection$E
+corrected_projected_japan_E = japan_E_corrected_2050
 ```
 
 ```{r emissions factors}
